@@ -6,5 +6,7 @@ services:
 
   Tourze\JsonRPCLogBundle\EventSubscriber\:
     resource: '../../EventSubscriber/'
+  Tourze\JsonRPCLogBundle\Logger\:
+    resource: '../../Logger/'
   Tourze\JsonRPCLogBundle\Repository\:
     resource: '../../Repository/'
