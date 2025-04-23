@@ -30,6 +30,7 @@
     "tourze/symfony-schedule-entity-clean-bundle": "0.0.*",
     "yiisoft/json": "^1.0",
     "yiisoft/strings": "^2.1",
+    "symfony/yaml": "^6.4 || ^7.1",
     "psr/log": "^3|^2|^1"
   },
   "autoload": {
