@@ -27,7 +27,7 @@
     "tourze/doctrine-user-bundle": "0.0.*",
     "tourze/doctrine-user-agent-bundle": "0.0.*",
     "tourze/doctrine-snowflake-bundle": "0.0.*",
-    "tourze/symfony-schedule-entity-clean-bundle": "0.0.*",
+    "tourze/symfony-schedule-entity-clean-bundle": "0.1.*",
     "yiisoft/json": "^1.0",
     "yiisoft/strings": "^2.1",
     "symfony/yaml": "^6.4 || ^7.1",
