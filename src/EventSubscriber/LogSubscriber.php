@@ -20,6 +20,7 @@ use Tourze\JsonRPC\Core\Exception\ApiException;
 use Tourze\JsonRPC\Core\Exception\JsonRpcException;
 use Tourze\JsonRPCLogBundle\Attribute\Log;
 use Tourze\JsonRPCLogBundle\Entity\RequestLog;
+use Tourze\JsonRPCLogBundle\Procedure\LogFormatProcedure;
 use Yiisoft\Json\Json;
 use Yiisoft\Strings\StringHelper;
 
@@ -69,6 +70,7 @@ class LogSubscriber implements ResetInterface
             ]);
         }
 
+        $method = $event->getMethod();
         [$logResult, $logRequest, $logResponse] = $this->getLogConfig(ReflectionHelper::getClassReflection($event->getMethod()), $event);
         if (!$logResult) {
             return;
@@ -93,7 +95,10 @@ class LogSubscriber implements ResetInterface
             $log->setStopwatchResult(strval($this->event));
         }
 
-        $log->setApiName(get_class($event->getMethod()));
+        $log->setApiName($method::class);
+        if ($method instanceof LogFormatProcedure) {
+            $log->setDescription($method->generateFormattedLogText($event->getJsonRpcRequest()));
+        }
 
         try {
             $this->doctrineService->asyncInsert($log);
@@ -123,7 +128,8 @@ class LogSubscriber implements ResetInterface
             ]);
         }
 
-        [$logResult, $logRequest, $logResponse] = $this->getLogConfig(ReflectionHelper::getClassReflection($event->getMethod()), $event);
+        $method = $event->getMethod();
+        [$logResult, $logRequest, $logResponse] = $this->getLogConfig(ReflectionHelper::getClassReflection($method), $event);
         if (!$logResult) {
             return;
         }
@@ -146,7 +152,10 @@ class LogSubscriber implements ResetInterface
             $log->setStopwatchResult(strval($this->event));
         }
 
-        $log->setApiName(get_class($event->getMethod()));
+        $log->setApiName($method::class);
+        if ($method instanceof LogFormatProcedure) {
+            $log->setDescription($method->generateFormattedLogText($event->getJsonRpcRequest()));
+        }
 
         try {
             $this->doctrineService->asyncInsert($log);

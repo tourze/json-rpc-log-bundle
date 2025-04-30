@@ -6,7 +6,6 @@ use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Serializer\Attribute\Groups;
 use Symfony\Component\Serializer\Attribute\Ignore;
-use Symfony\Contracts\EventDispatcher\EventDispatcherInterface;
 use Tourze\DoctrineIndexedBundle\Attribute\IndexColumn;
 use Tourze\DoctrineIpBundle\Attribute\CreateIpColumn;
 use Tourze\DoctrineSnowflakeBundle\Service\SnowflakeIdGenerator;
@@ -16,13 +15,12 @@ use Tourze\DoctrineUserBundle\Attribute\CreatedByColumn;
 use Tourze\EasyAdmin\Attribute\Action\Exportable;
 use Tourze\EasyAdmin\Attribute\Column\ExportColumn;
 use Tourze\EasyAdmin\Attribute\Column\ListColumn;
+use Tourze\EasyAdmin\Attribute\Field\FormField;
 use Tourze\EasyAdmin\Attribute\Filter\Filterable;
 use Tourze\EasyAdmin\Attribute\Filter\Keyword;
 use Tourze\EasyAdmin\Attribute\Permission\AsPermission;
-use Tourze\JsonRPCLogBundle\Event\JsonRpcLogFormatEvent;
 use Tourze\JsonRPCLogBundle\Repository\RequestLogRepository;
 use Tourze\ScheduleEntityCleanBundle\Attribute\AsScheduleClean;
-use Yiisoft\Json\Json;
 
 /**
  * 接口日志
@@ -44,6 +42,11 @@ class RequestLog
     #[ORM\CustomIdGenerator(SnowflakeIdGenerator::class)]
     #[ORM\Column(type: Types::BIGINT, nullable: false, options: ['comment' => 'ID'])]
     private ?string $id = null;
+
+    #[ListColumn]
+    #[FormField]
+    #[ORM\Column(type: Types::TEXT, nullable: true, options: ['comment' => '操作记录'])]
+    private ?string $description = null;
 
     #[Groups(['restful_read'])]
     #[Keyword(inputWidth: 240)]
@@ -151,21 +154,14 @@ class RequestLog
         return $this->getCreatedBy() ?: '';
     }
 
-    #[ExportColumn(title: '操作记录')]
-    #[ListColumn(title: '操作记录', width: 500)]
-    public function renderHumanizeMessage(EventDispatcherInterface $eventDispatcher): string
+    public function getDescription(): ?string
     {
-        $request = Json::decode($this->getRequest());
-        $result = $request['method'] ?? '';
+        return $this->description;
+    }
 
-        $event = new JsonRpcLogFormatEvent();
-        $event->setLog($this);
-        $event->setResult($result);
-        $event->setRequest($request);
-
-        $eventDispatcher->dispatch($event);
-
-        return $event->getResult();
+    public function setDescription(?string $description): void
+    {
+        $this->description = $description;
     }
 
     #[ExportColumn(title: '状态')]

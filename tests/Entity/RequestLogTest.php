@@ -3,9 +3,7 @@
 namespace Tourze\JsonRPCLogBundle\Tests\Entity;
 
 use PHPUnit\Framework\TestCase;
-use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Tourze\JsonRPCLogBundle\Entity\RequestLog;
-use Tourze\JsonRPCLogBundle\Event\JsonRpcLogFormatEvent;
 use Yiisoft\Json\Json;
 
 class RequestLogTest extends TestCase
@@ -93,36 +91,5 @@ class RequestLogTest extends TestCase
         // 有异常情况
         $requestLog->setException('Test Exception');
         $this->assertSame('异常', $requestLog->renderStatus());
-    }
-
-    public function testRenderHumanizeMessage(): void
-    {
-        $requestLog = new RequestLog();
-        $requestData = Json::encode([
-            'method' => 'test.method',
-            'params' => ['id' => 1]
-        ]);
-        $requestLog->setRequest($requestData);
-
-        // 创建模拟的 EventDispatcher
-        /** @var EventDispatcherInterface&\PHPUnit\Framework\MockObject\MockObject $eventDispatcher */
-        $eventDispatcher = $this->createMock(EventDispatcherInterface::class);
-
-        // 配置模拟对象的预期行为
-        $eventDispatcher->expects($this->once())
-            ->method('dispatch')
-            ->willReturnCallback(function (JsonRpcLogFormatEvent $event) {
-                // 验证事件对象
-                $this->assertInstanceOf(JsonRpcLogFormatEvent::class, $event);
-                $this->assertSame('test.method', $event->getResult());
-
-                // 修改结果以便我们可以验证
-                $event->setResult('Formatted: test.method');
-                return $event;
-            });
-
-        // 调用并验证结果
-        $result = $requestLog->renderHumanizeMessage($eventDispatcher);
-        $this->assertSame('Formatted: test.method', $result);
     }
 }
