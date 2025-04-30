@@ -48,7 +48,6 @@ composer require tourze/json-rpc-log-bundle
 
 - 通过环境变量 `JSON_RPC_LOG_PERSIST_DAY_NUM` 控制日志保留天数
 - 通过 #[Log] 注解控制是否记录请求/响应/结果
-- 监听 `JsonRpcLogFormatEvent` 事件自定义日志格式
 
 ## 高级特性
 

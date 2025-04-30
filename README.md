@@ -48,7 +48,6 @@ composer require tourze/json-rpc-log-bundle
 
 - Control log retention with `JSON_RPC_LOG_PERSIST_DAY_NUM` env var
 - Log result/request/response via #[Log] attribute
-- Customize log formatting by listening to `JsonRpcLogFormatEvent`
 
 ## Advanced
 

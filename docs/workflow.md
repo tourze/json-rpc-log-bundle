@@ -8,7 +8,6 @@
 2. 方法执行成功时，触发 `MethodExecuteSuccessEvent`，记录请求、响应、耗时等信息。
 3. 方法执行失败时，触发 `MethodExecuteFailureEvent`，记录请求、异常信息、耗时等。
 4. 日志对象 `RequestLog` 通过 Doctrine 异步写入数据库。
-5. 可通过事件 `JsonRpcLogFormatEvent` 自定义日志格式。
 
 ## Mermaid 流程图
 
