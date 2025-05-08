@@ -2,6 +2,7 @@
 
 namespace Tourze\JsonRPCLogBundle\EventSubscriber;
 
+use Monolog\Attribute\WithMonologChannel;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\DependencyInjection\Attribute\AutoconfigureTag;
 use Symfony\Component\EventDispatcher\Attribute\AsEventListener;
@@ -28,6 +29,7 @@ use Yiisoft\Strings\StringHelper;
  * 监听JsonRPC Server响应接口，并定制一些处理逻辑
  */
 #[AutoconfigureTag('as-coroutine')]
+#[WithMonologChannel('procedure')]
 class LogSubscriber implements ResetInterface
 {
     private Stopwatch $stopwatch;
@@ -35,7 +37,7 @@ class LogSubscriber implements ResetInterface
     private ?StopwatchEvent $event = null;
 
     public function __construct(
-        private readonly LoggerInterface $procedureLogger,
+        private readonly LoggerInterface $logger,
         private readonly DoctrineService $doctrineService,
     ) {
         $this->stopwatch = new Stopwatch();
@@ -57,7 +59,7 @@ class LogSubscriber implements ResetInterface
     public function onSuccess(MethodExecuteSuccessEvent $event): void
     {
         try {
-            $this->procedureLogger->info('JsonRPC执行成功', [
+            $this->logger->info('JsonRPC执行成功', [
                 'result' => StringHelper::truncateMiddle(
                     Json::encode($event->getResult()),
                     intval($_ENV['JSON_RPC_LOG_RESULT_LENGTH'] ?? 1000),
@@ -65,7 +67,7 @@ class LogSubscriber implements ResetInterface
                 'duration' => $event->getEndTime()->diffInMicroseconds($event->getStartTime(), true),
             ]);
         } catch (\Throwable $exception) {
-            $this->procedureLogger->warning('JsonRPC执行成功，但序列化日志失败', [
+            $this->logger->warning('JsonRPC执行成功，但序列化日志失败', [
                 'exception' => $exception,
             ]);
         }
@@ -103,7 +105,7 @@ class LogSubscriber implements ResetInterface
         try {
             $this->doctrineService->asyncInsert($log);
         } catch (\Throwable $exception) {
-            $this->procedureLogger->error('记录JsonRPC日志时发生错误', [
+            $this->logger->error('记录JsonRPC日志时发生错误', [
                 'exception' => $exception,
                 'log' => $log,
             ]);
@@ -114,15 +116,15 @@ class LogSubscriber implements ResetInterface
     public function onFailure(MethodExecuteFailureEvent $event): void
     {
         if ($event->getException() instanceof ApiException) {
-            $this->procedureLogger->warning('JsonRPC执行时发生预期错误：' . $event->getException()->getMessage(), [
+            $this->logger->warning('JsonRPC执行时发生预期错误：' . $event->getException()->getMessage(), [
                 'exception' => $event->getException(),
             ]);
         } elseif ($event->getException() instanceof \AssertionError) {
-            $this->procedureLogger->warning('JsonRPC执行时发生断言错误：' . $event->getException()->getMessage(), [
+            $this->logger->warning('JsonRPC执行时发生断言错误：' . $event->getException()->getMessage(), [
                 'exception' => $event->getException(),
             ]);
         } else {
-            $this->procedureLogger->error('JsonRPC执行时发生未知错误：' . $event->getException()->getMessage(), [
+            $this->logger->error('JsonRPC执行时发生未知错误：' . $event->getException()->getMessage(), [
                 'exception' => $event->getException(),
                 'backtrace' => Backtrace::create()->toString(),
             ]);
@@ -160,7 +162,7 @@ class LogSubscriber implements ResetInterface
         try {
             $this->doctrineService->asyncInsert($log);
         } catch (\Throwable $exception) {
-            $this->procedureLogger->error('记录JsonRPC请求日志时发生错误', [
+            $this->logger->error('记录JsonRPC请求日志时发生错误', [
                 'exception' => $exception,
             ]);
         }
@@ -175,7 +177,7 @@ class LogSubscriber implements ResetInterface
             }
         }
 
-        $this->procedureLogger->error("JsonRPC执行{$event->getFromJsonRpcRequest()?->getMethod()}时发生异常", [
+        $this->logger->error("JsonRPC执行{$event->getFromJsonRpcRequest()?->getMethod()}时发生异常", [
             'exception' => $event->getException(),
         ]);
 
