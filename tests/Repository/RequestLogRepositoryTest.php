@@ -19,4 +19,39 @@ class RequestLogRepositoryTest extends TestCase
         // 由于构造函数只是调用父类的构造函数，因此我们只能确保没有抛出异常
         $this->assertInstanceOf(RequestLogRepository::class, $repository);
     }
+
+    public function testInheritance(): void
+    {
+        $registry = $this->createMock(ManagerRegistry::class);
+        $repository = new RequestLogRepository($registry);
+
+        // 验证继承关系
+        $this->assertInstanceOf(\Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository::class, $repository);
+    }
+
+    public function testRepositoryMethods(): void
+    {
+        $registry = $this->createMock(ManagerRegistry::class);
+        $repository = new RequestLogRepository($registry);
+
+        // 验证Repository类中定义的方法
+        $this->assertTrue(method_exists($repository, 'find'));
+        $this->assertTrue(method_exists($repository, 'findOneBy'));
+        $this->assertTrue(method_exists($repository, 'findAll'));
+        $this->assertTrue(method_exists($repository, 'findBy'));
+        $this->assertTrue(method_exists($repository, 'createQueryBuilder'));
+    }
+
+    public function testEntityClass(): void
+    {
+        $registry = $this->createMock(ManagerRegistry::class);
+        $repository = new RequestLogRepository($registry);
+
+        // 通过反射检查Repository管理的实体类
+        $reflection = new \ReflectionClass($repository);
+        $parentClass = $reflection->getParentClass();
+        
+        // 验证是ServiceEntityRepository的子类
+        $this->assertEquals('Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository', $parentClass->getName());
+    }
 }
