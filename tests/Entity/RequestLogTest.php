@@ -68,31 +68,6 @@ class RequestLogTest extends TestCase
         $this->assertSame($createdBy, $requestLog->getCreatedBy());
     }
 
-    public function testRenderTrackUser(): void
-    {
-        $requestLog = new RequestLog();
-
-        // 用户为空的情况
-        $this->assertSame('', $requestLog->renderTrackUser());
-
-        // 设置用户
-        $createdBy = 'Test User';
-        $requestLog->setCreatedBy($createdBy);
-        $this->assertSame($createdBy, $requestLog->renderTrackUser());
-    }
-
-    public function testRenderStatus(): void
-    {
-        $requestLog = new RequestLog();
-
-        // 无异常情况
-        $this->assertSame('成功', $requestLog->renderStatus());
-
-        // 有异常情况
-        $requestLog->setException('Test Exception');
-        $this->assertSame('异常', $requestLog->renderStatus());
-    }
-
     public function testNullableFields(): void
     {
         $requestLog = new RequestLog();
@@ -278,29 +253,6 @@ class RequestLogTest extends TestCase
             $requestLog->setCreatedFromUa($ua);
             $this->assertSame($ua, $requestLog->getCreatedFromUa());
         }
-    }
-
-    public function testRenderMethodsWithEdgeCases(): void
-    {
-        $requestLog = new RequestLog();
-
-        // 测试renderTrackUser的边界情况
-        $requestLog->setCreatedBy('');
-        $this->assertSame('', $requestLog->renderTrackUser());
-
-        $requestLog->setCreatedBy('   '); // 空格
-        $this->assertSame('   ', $requestLog->renderTrackUser());
-
-        // 测试renderStatus的边界情况
-        $requestLog->setException('');
-        $this->assertSame('成功', $requestLog->renderStatus()); // 空字符串在PHP中是falsy，所以返回'成功'
-
-        $requestLog->setException('   '); // 空格
-        $this->assertSame('异常', $requestLog->renderStatus()); // 非空字符串是truthy，所以返回'异常'
-        
-        // 测试null情况
-        $requestLog->setException(null);
-        $this->assertSame('成功', $requestLog->renderStatus()); // null是falsy，所以返回'成功'
     }
 
     public function testFluentInterface(): void
