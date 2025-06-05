@@ -7,6 +7,18 @@ use Tourze\BundleDependency\BundleDependencyInterface;
 
 class JsonRPCLogBundle extends Bundle implements BundleDependencyInterface
 {
+//    public function build(ContainerBuilder $container): void
+//    {
+//        parent::build($container);
+//
+//        $container->addCompilerPass(new DatabaseServicesCompilerPass(
+//            servicePrefix: 'json_rpc_log',
+//            entityPath: __DIR__ . '/Entity',
+//            entityNamespace: 'Tourze\\JsonRPCLogBundle\\Entity',
+//            serviceNamespace: 'Tourze\\JsonRPCLogBundle'
+//        ));
+//    }
+
     public static function getBundleDependencies(): array
     {
         return [
