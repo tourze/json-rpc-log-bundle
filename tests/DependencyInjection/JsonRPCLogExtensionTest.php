@@ -118,7 +118,7 @@ class JsonRPCLogExtensionTest extends TestCase
         try {
             $loader->load('services.yaml');
             $this->assertTrue(true); // 如果没有异常，测试通过
-        } catch (\Throwable $e) {
+        } catch (\Exception $e) {
             $this->fail('Failed to load services.yaml: ' . $e->getMessage());
         }
     }

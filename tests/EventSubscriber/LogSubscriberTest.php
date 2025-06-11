@@ -6,7 +6,7 @@ use Carbon\CarbonImmutable;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use Psr\Log\LoggerInterface;
-use Tourze\DoctrineAsyncInsertBundle\Service\AsyncInsertService;
+use Tourze\DoctrineAsyncInsertBundle\Service\AsyncInsertService as DoctrineService;
 use Tourze\JsonRPC\Core\Domain\JsonRpcMethodInterface;
 use Tourze\JsonRPC\Core\Event\MethodExecuteSuccessEvent;
 use Tourze\JsonRPC\Core\Event\OnExceptionEvent;
@@ -20,15 +20,15 @@ class LogSubscriberTest extends TestCase
     /** @var LoggerInterface&MockObject */
     private LoggerInterface $logger;
 
-    /** @var AsyncInsertService&MockObject */
-    private AsyncInsertService $doctrineService;
+    /** @var DoctrineService&MockObject */
+    private DoctrineService $doctrineService;
 
     private LogSubscriber $subscriber;
 
     protected function setUp(): void
     {
         $this->logger = $this->createMock(LoggerInterface::class);
-        $this->doctrineService = $this->createMock(AsyncInsertService::class);
+        $this->doctrineService = $this->createMock(DoctrineService::class);
         $this->subscriber = new LogSubscriber(
             $this->logger,
             $this->doctrineService
