@@ -11,7 +11,7 @@ use Symfony\Component\Stopwatch\StopwatchEvent;
 use Symfony\Contracts\Service\ResetInterface;
 use Tourze\BacktraceHelper\Backtrace;
 use Tourze\BacktraceHelper\ExceptionPrinter;
-use Tourze\DoctrineAsyncBundle\Service\DoctrineService;
+use Tourze\DoctrineAsyncInsertBundle\Service\AsyncInsertService;
 use Tourze\DoctrineHelper\ReflectionHelper;
 use Tourze\JsonRPC\Core\Event\MethodExecuteFailureEvent;
 use Tourze\JsonRPC\Core\Event\MethodExecuteSuccessEvent;
@@ -38,7 +38,7 @@ class LogSubscriber implements ResetInterface
 
     public function __construct(
         private readonly LoggerInterface $logger,
-        private readonly DoctrineService $doctrineService,
+        private readonly AsyncInsertService $doctrineService,
     ) {
         $this->stopwatch = new Stopwatch();
     }
