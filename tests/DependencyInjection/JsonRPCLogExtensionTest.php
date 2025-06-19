@@ -176,12 +176,15 @@ class JsonRPCLogExtensionTest extends TestCase
         $taggedServices = $container->findTaggedServiceIds('monolog.processor');
         
         // 验证服务标签数组结构
-        // 无论是否有标记的服务，测试都应该通过
-        if (!empty($taggedServices)) {
-            // 如果有标记的服务，验证结构
-            foreach ($taggedServices as $serviceId => $tags) {
-            }
-        }
+        $this->assertIsArray($taggedServices, 'findTaggedServiceIds应该返回数组');
+        
+        // 验证 event_subscriber 标签的服务
+        $eventSubscriberServices = $container->findTaggedServiceIds('kernel.event_subscriber');
+        $this->assertIsArray($eventSubscriberServices, 'event subscriber services应该是数组');
+        
+        // 验证容器至少加载了一些服务定义
+        $definitions = $container->getDefinitions();
+        $this->assertGreaterThan(0, count($definitions), '容器应该包含服务定义');
     }
 
     public function testBundleConfiguration(): void

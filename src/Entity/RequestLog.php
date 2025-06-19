@@ -4,12 +4,11 @@ namespace Tourze\JsonRPCLogBundle\Entity;
 
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
-use Tourze\DoctrineIndexedBundle\Attribute\IndexColumn;
 use Tourze\DoctrineIpBundle\Attribute\CreateIpColumn;
 use Tourze\DoctrineSnowflakeBundle\Service\SnowflakeIdGenerator;
 use Tourze\DoctrineTimestampBundle\Traits\CreateTimeAware;
 use Tourze\DoctrineUserAgentBundle\Attribute\CreateUserAgentColumn;
-use Tourze\DoctrineUserBundle\Attribute\CreatedByColumn;
+use Tourze\DoctrineUserBundle\Traits\CreatedByAware;
 use Tourze\JsonRPCLogBundle\Repository\RequestLogRepository;
 use Tourze\ScheduleEntityCleanBundle\Attribute\AsScheduleClean;
 
@@ -21,9 +20,10 @@ use Tourze\ScheduleEntityCleanBundle\Attribute\AsScheduleClean;
 #[AsScheduleClean(expression: '41 1 * * *', defaultKeepDay: 180, keepDayEnv: 'JSON_RPC_LOG_PERSIST_DAY_NUM')]
 #[ORM\Entity(repositoryClass: RequestLogRepository::class)]
 #[ORM\Table(name: 'json_rpc_log', options: ['comment' => 'json_rpc日志'])]
-class RequestLog
+class RequestLog implements \Stringable
 {
     use CreateTimeAware;
+    use CreatedByAware;
 
     #[ORM\Id]
     #[ORM\GeneratedValue(strategy: 'CUSTOM')]
@@ -63,10 +63,6 @@ class RequestLog
     #[ORM\Column(type: Types::TEXT, nullable: true, options: ['comment' => '创建时UA'])]
     private ?string $createdFromUa = null;
 
-    #[IndexColumn]
-    #[CreatedByColumn]
-    #[ORM\Column(nullable: true, options: ['comment' => '创建人'])]
-    private ?string $createdBy = null;
 
     public function getId(): ?string
     {
@@ -191,13 +187,8 @@ class RequestLog
         return $this;
     }
 
-    public function setCreatedBy(?string $createdBy): void
+    public function __toString(): string
     {
-        $this->createdBy = $createdBy;
-    }
-
-    public function getCreatedBy(): ?string
-    {
-        return $this->createdBy;
+        return $this->apiName ?? $this->id ?? '';
     }
 }

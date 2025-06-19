@@ -58,7 +58,7 @@ class RequestLogTest extends TestCase
         $this->assertSame($createdFromUa, $requestLog->getCreatedFromUa());
 
         // 测试 CreateTime 相关方法
-        $createTime = new \DateTime();
+        $createTime = new \DateTimeImmutable();
         $requestLog->setCreateTime($createTime);
         $this->assertSame($createTime, $requestLog->getCreateTime());
 
@@ -190,7 +190,7 @@ class RequestLogTest extends TestCase
         $requestLog = new RequestLog();
 
         // 测试不同的DateTime对象
-        $dateTime = new \DateTime('2024-01-01 12:00:00');
+        $dateTime = new \DateTimeImmutable('2024-01-01 12:00:00');
         $requestLog->setCreateTime($dateTime);
         $this->assertSame($dateTime, $requestLog->getCreateTime());
 
