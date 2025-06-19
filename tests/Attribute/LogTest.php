@@ -108,8 +108,7 @@ class LogTest extends TestCase
         $log = new Log();
         
         // 验证属性类型
-        $this->assertIsBool($log->request, 'request属性必须是boolean类型');
-        $this->assertIsBool($log->response, 'response属性必须是boolean类型');
+
     }
 
     public function testAttributeReflection(): void

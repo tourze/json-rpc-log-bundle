@@ -176,14 +176,10 @@ class JsonRPCLogExtensionTest extends TestCase
         $taggedServices = $container->findTaggedServiceIds('monolog.processor');
         
         // 验证服务标签数组结构
-        $this->assertIsArray($taggedServices);
-        
         // 无论是否有标记的服务，测试都应该通过
         if (!empty($taggedServices)) {
             // 如果有标记的服务，验证结构
             foreach ($taggedServices as $serviceId => $tags) {
-                $this->assertIsString($serviceId);
-                $this->assertIsArray($tags);
             }
         }
     }

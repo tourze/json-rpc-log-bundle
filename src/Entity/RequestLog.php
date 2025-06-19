@@ -7,7 +7,7 @@ use Doctrine\ORM\Mapping as ORM;
 use Tourze\DoctrineIndexedBundle\Attribute\IndexColumn;
 use Tourze\DoctrineIpBundle\Attribute\CreateIpColumn;
 use Tourze\DoctrineSnowflakeBundle\Service\SnowflakeIdGenerator;
-use Tourze\DoctrineTimestampBundle\Attribute\CreateTimeColumn;
+use Tourze\DoctrineTimestampBundle\Traits\CreateTimeAware;
 use Tourze\DoctrineUserAgentBundle\Attribute\CreateUserAgentColumn;
 use Tourze\DoctrineUserBundle\Attribute\CreatedByColumn;
 use Tourze\JsonRPCLogBundle\Repository\RequestLogRepository;
@@ -23,6 +23,8 @@ use Tourze\ScheduleEntityCleanBundle\Attribute\AsScheduleClean;
 #[ORM\Table(name: 'json_rpc_log', options: ['comment' => 'json_rpc日志'])]
 class RequestLog
 {
+    use CreateTimeAware;
+
     #[ORM\Id]
     #[ORM\GeneratedValue(strategy: 'CUSTOM')]
     #[ORM\CustomIdGenerator(SnowflakeIdGenerator::class)]
@@ -52,11 +54,6 @@ class RequestLog
 
     #[ORM\Column(length: 200, nullable: true, options: ['comment' => 'API名称'])]
     private ?string $apiName = null;
-
-    #[IndexColumn]
-    #[CreateTimeColumn]
-    #[ORM\Column(type: Types::DATETIME_MUTABLE, nullable: true, options: ['comment' => '创建时间'])]
-    private ?\DateTimeInterface $createTime = null;
 
     #[CreateIpColumn]
     #[ORM\Column(type: Types::STRING, length: 45, nullable: true, options: ['comment' => '操作IP'])]
@@ -192,18 +189,6 @@ class RequestLog
         $this->createdFromUa = $createdFromUa;
 
         return $this;
-    }
-
-    public function setCreateTime(?\DateTimeInterface $createdAt): self
-    {
-        $this->createTime = $createdAt;
-
-        return $this;
-    }
-
-    public function getCreateTime(): ?\DateTimeInterface
-    {
-        return $this->createTime;
     }
 
     public function setCreatedBy(?string $createdBy): void
