@@ -97,7 +97,7 @@ class JsonRPCLogExtensionTest extends TestCase
         
         foreach ($definitions as $id => $definition) {
             // 确保所有服务都有有效的类名
-            if ($definition->getClass()) {
+            if ($definition->getClass() !== null) {
                 $this->assertNotEmpty($definition->getClass(), "Service {$id} should have a class");
             }
         }
@@ -134,7 +134,7 @@ class JsonRPCLogExtensionTest extends TestCase
         $this->assertInstanceOf(ContainerBuilder::class, $container);
         
         // 验证没有编译错误
-        $this->assertTrue($container->getDefinitions() !== null);
+        $this->assertNotEmpty($container->getDefinitions());
     }
 
     public function testExtensionInheritance(): void
@@ -176,11 +176,11 @@ class JsonRPCLogExtensionTest extends TestCase
         $taggedServices = $container->findTaggedServiceIds('monolog.processor');
         
         // 验证服务标签数组结构
-        $this->assertIsArray($taggedServices, 'findTaggedServiceIds应该返回数组');
+        // findTaggedServiceIds 总是返回数组，所以不需要检查
         
         // 验证 event_subscriber 标签的服务
         $eventSubscriberServices = $container->findTaggedServiceIds('kernel.event_subscriber');
-        $this->assertIsArray($eventSubscriberServices, 'event subscriber services应该是数组');
+        // findTaggedServiceIds 总是返回数组，所以不需要检查
         
         // 验证容器至少加载了一些服务定义
         $definitions = $container->getDefinitions();

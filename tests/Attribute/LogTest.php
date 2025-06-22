@@ -107,13 +107,14 @@ class LogTest extends TestCase
     {
         $log = new Log();
         
-        // 验证属性类型
-        $this->assertIsBool($log->request, 'request属性应该是bool类型');
-        $this->assertIsBool($log->response, 'response属性应该是bool类型');
+        // 验证默认值
+        $this->assertTrue($log->request, 'request属性默认值应该是true');
+        $this->assertTrue($log->response, 'response属性默认值应该是true');
         
-        // 验证属性值范围
-        $this->assertTrue(is_bool($log->request));
-        $this->assertTrue(is_bool($log->response));
+        // 测试自定义值
+        $customLog = new Log(request: false, response: false);
+        $this->assertFalse($customLog->request, 'request属性应该可以设置为false');
+        $this->assertFalse($customLog->response, 'response属性应该可以设置为false');
     }
 
     public function testAttributeReflection(): void

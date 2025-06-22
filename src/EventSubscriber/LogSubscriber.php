@@ -92,8 +92,8 @@ class LogSubscriber implements ResetInterface
             $log->setResponse(Json::encode($event->getResult()));
         }
 
-        if ($this->event) {
-            $log->setStopwatchDuration($this->event->getDuration());
+        if ($this->event !== null) {
+            $log->setStopwatchDuration((string) $this->event->getDuration());
             $log->setStopwatchResult(strval($this->event));
         }
 
@@ -149,8 +149,8 @@ class LogSubscriber implements ResetInterface
         $log->setResponse($event->getException()->getMessage());
         $log->setException(ExceptionPrinter::exception($event->getException()));
 
-        if ($this->event) {
-            $log->setStopwatchDuration($this->event->getDuration());
+        if ($this->event !== null) {
+            $log->setStopwatchDuration((string) $this->event->getDuration());
             $log->setStopwatchResult(strval($this->event));
         }
 

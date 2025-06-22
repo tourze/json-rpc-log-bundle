@@ -27,10 +27,13 @@ class LogFormatProcedureTest extends TestCase
         
         $parameter = $method->getParameters()[0];
         $this->assertEquals('request', $parameter->getName());
-        $this->assertEquals(JsonRpcRequest::class, $parameter->getType()?->getName());
+        $paramType = $parameter->getType();
+        $this->assertNotNull($paramType);
+        $this->assertEquals(JsonRpcRequest::class, $paramType instanceof \ReflectionNamedType ? $paramType->getName() : '');
         
         $returnType = $method->getReturnType();
-        $this->assertEquals('string', $returnType?->getName());
+        $this->assertNotNull($returnType);
+        $this->assertEquals('string', $returnType instanceof \ReflectionNamedType ? $returnType->getName() : '');
     }
 
     public function testMockImplementationBasic(): void
@@ -65,9 +68,9 @@ class LogFormatProcedureTest extends TestCase
                 // 处理参数（如果可用）
                 $paramsInfo = '[]'; // 默认空数组
                 try {
-                    if (method_exists($request, 'getParams')) {
+                    {
                         $params = $request->getParams();
-                        if (method_exists($params, 'toArray')) {
+                        {
                             $paramsArray = $params->toArray();
                             $paramsInfo = json_encode($paramsArray);
                         }

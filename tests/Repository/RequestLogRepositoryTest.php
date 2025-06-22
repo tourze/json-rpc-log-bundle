@@ -34,12 +34,9 @@ class RequestLogRepositoryTest extends TestCase
         $registry = $this->createMock(ManagerRegistry::class);
         $repository = new RequestLogRepository($registry);
 
-        // 验证Repository类中定义的方法
-        $this->assertTrue(method_exists($repository, 'find'));
-        $this->assertTrue(method_exists($repository, 'findOneBy'));
-        $this->assertTrue(method_exists($repository, 'findAll'));
-        $this->assertTrue(method_exists($repository, 'findBy'));
-        $this->assertTrue(method_exists($repository, 'createQueryBuilder'));
+        // 验证Repository实例化成功
+        $this->assertInstanceOf(RequestLogRepository::class, $repository);
+        $this->assertInstanceOf(\Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository::class, $repository);
     }
 
     public function testEntityClass(): void
