@@ -28,8 +28,8 @@ use Yiisoft\Strings\StringHelper;
 /**
  * 监听JsonRPC Server响应接口，并定制一些处理逻辑
  */
-#[AutoconfigureTag('as-coroutine')]
-#[WithMonologChannel('procedure')]
+#[AutoconfigureTag(name: 'as-coroutine')]
+#[WithMonologChannel(channel: 'procedure')]
 class LogSubscriber implements ResetInterface
 {
     private Stopwatch $stopwatch;

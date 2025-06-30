@@ -172,15 +172,18 @@ class JsonRPCLogExtensionTest extends TestCase
 
         $extension->load([], $container);
 
-        // 检查服务标签
-        $taggedServices = $container->findTaggedServiceIds('monolog.processor');
+        // 验证服务定义存在（由于使用了 autoconfigure，标签会在编译时自动添加）
+        $this->assertTrue(
+            $container->hasDefinition('Tourze\JsonRPCLogBundle\Logger\PayloadLogProcessor') ||
+            $container->hasAlias('Tourze\JsonRPCLogBundle\Logger\PayloadLogProcessor'),
+            'PayloadLogProcessor 服务应该被定义'
+        );
         
-        // 验证服务标签数组结构
-        // findTaggedServiceIds 总是返回数组，所以不需要检查
-        
-        // 验证 event_subscriber 标签的服务
-        $eventSubscriberServices = $container->findTaggedServiceIds('kernel.event_subscriber');
-        // findTaggedServiceIds 总是返回数组，所以不需要检查
+        $this->assertTrue(
+            $container->hasDefinition('Tourze\JsonRPCLogBundle\EventSubscriber\LogSubscriber') ||
+            $container->hasAlias('Tourze\JsonRPCLogBundle\EventSubscriber\LogSubscriber'),
+            'LogSubscriber 服务应该被定义'
+        );
         
         // 验证容器至少加载了一些服务定义
         $definitions = $container->getDefinitions();

@@ -89,11 +89,6 @@ class LogSubscriberTest extends TestCase
         $this->subscriber->onSuccess($event);
     }
 
-    public function testOnFailureWithSpecificError(): void
-    {
-        // 跳过这个测试，因为方法依赖于 getJsonRpcRequest 的返回值
-        $this->markTestSkipped('这个测试需要对内部实现进行模拟，避免测试不稳定');
-    }
 
     public function testOnException(): void
     {

@@ -105,8 +105,15 @@ class LogFormatProcedureTest extends TestCase
             public function generateFormattedLogText(JsonRpcRequest $request): string
             {
                 try {
-                    $method = $request->getMethod() ?: 'unknown';
-                    $id = $request->getId() ?: 'no-id';
+                    $method = $request->getMethod();
+                    if (empty($method)) {
+                        $method = 'unknown';
+                    }
+                    
+                    $id = $request->getId();
+                    if (empty($id)) {
+                        $id = 'no-id';
+                    }
                     
                     return "Method: {$method}, ID: {$id}";
                 } catch (\Throwable $e) {

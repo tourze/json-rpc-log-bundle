@@ -6,6 +6,7 @@ use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use Tourze\DoctrineIpBundle\Attribute\CreateIpColumn;
 use Tourze\DoctrineSnowflakeBundle\Service\SnowflakeIdGenerator;
+use Tourze\DoctrineSnowflakeBundle\Traits\SnowflakeKeyAware;
 use Tourze\DoctrineTimestampBundle\Traits\CreateTimeAware;
 use Tourze\DoctrineUserAgentBundle\Attribute\CreateUserAgentColumn;
 use Tourze\DoctrineUserBundle\Traits\CreatedByAware;
@@ -24,12 +25,8 @@ class RequestLog implements \Stringable
 {
     use CreateTimeAware;
     use CreatedByAware;
+    use SnowflakeKeyAware;
 
-    #[ORM\Id]
-    #[ORM\GeneratedValue(strategy: 'CUSTOM')]
-    #[ORM\CustomIdGenerator(SnowflakeIdGenerator::class)]
-    #[ORM\Column(type: Types::BIGINT, nullable: false, options: ['comment' => 'ID'])]
-    private ?string $id = null;
 
     #[ORM\Column(type: Types::TEXT, nullable: true, options: ['comment' => '操作记录'])]
     private ?string $description = null;
@@ -64,10 +61,6 @@ class RequestLog implements \Stringable
     private ?string $createdFromUa = null;
 
 
-    public function getId(): ?string
-    {
-        return $this->id;
-    }
 
     public function getRequest(): ?string
     {

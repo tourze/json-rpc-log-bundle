@@ -14,8 +14,8 @@ use Yiisoft\Json\Json;
 /**
  * 如果当前正在执行 JsonRPC 方法，我们就将 Payload 打到日志那一行，以减少我们调试日志时的重复查询逻辑
  */
-#[AutoconfigureTag('monolog.processor')]
-#[AutoconfigureTag('as-coroutine')]
+#[AutoconfigureTag(name: 'monolog.processor')]
+#[AutoconfigureTag(name: 'as-coroutine')]
 class PayloadLogProcessor implements ProcessorInterface, ResetInterface
 {
     private ?string $payload = null;
