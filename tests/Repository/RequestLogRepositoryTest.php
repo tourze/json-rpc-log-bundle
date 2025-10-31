@@ -2,53 +2,146 @@
 
 namespace Tourze\JsonRPCLogBundle\Tests\Repository;
 
-use Doctrine\Persistence\ManagerRegistry;
-use PHPUnit\Framework\TestCase;
+use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
+use PHPUnit\Framework\Attributes\CoversClass;
+use PHPUnit\Framework\Attributes\Group;
+use PHPUnit\Framework\Attributes\RunTestsInSeparateProcesses;
+use Tourze\JsonRPCLogBundle\Entity\RequestLog;
 use Tourze\JsonRPCLogBundle\Repository\RequestLogRepository;
+use Tourze\PHPUnitSymfonyKernelTest\AbstractRepositoryTestCase;
 
-class RequestLogRepositoryTest extends TestCase
+/**
+ * @internal
+ */
+#[CoversClass(RequestLogRepository::class)]
+#[RunTestsInSeparateProcesses]
+#[Group('skip-database-tests')]
+final class RequestLogRepositoryTest extends AbstractRepositoryTestCase
 {
-    public function testConstructor(): void
+    protected static function getEntityClass(): string
     {
-        // 模拟 ManagerRegistry
-        $registry = $this->createMock(ManagerRegistry::class);
+        return RequestLog::class;
+    }
 
-        // 实例化 Repository
-        $repository = new RequestLogRepository($registry);
+    protected function createNewEntity(): object
+    {
+        return new RequestLog();
+    }
 
-        // 由于构造函数只是调用父类的构造函数，因此我们只能确保没有抛出异常
+    protected function getRepository(): RequestLogRepository
+    {
+        return self::getService(RequestLogRepository::class);
+    }
+
+    protected function onSetUp(): void
+    {
+        // 空实现，因为不需要数据库设置
+    }
+
+    public function testRepositoryInstanceCreation(): void
+    {
+        // 测试Repository实例化行为
+        $repository = $this->getRepository();
         $this->assertInstanceOf(RequestLogRepository::class, $repository);
+        $this->assertInstanceOf(ServiceEntityRepository::class, $repository);
     }
 
-    public function testInheritance(): void
+    public function testSaveEntityBehavior(): void
     {
-        $registry = $this->createMock(ManagerRegistry::class);
-        $repository = new RequestLogRepository($registry);
+        // 测试save方法的行为
+        $repository = $this->getRepository();
+        $entity = $this->createTestEntity();
 
-        // 验证继承关系
-        $this->assertInstanceOf(\Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository::class, $repository);
+        // 验证save方法可以调用而不抛出异常
+        $this->expectNotToPerformAssertions();
+        $repository->save($entity, false); // 不flush以避免数据库操作
     }
 
-    public function testRepositoryMethods(): void
+    public function testSaveEntityWithFlushBehavior(): void
     {
-        $registry = $this->createMock(ManagerRegistry::class);
-        $repository = new RequestLogRepository($registry);
+        // 测试save方法带flush的行为
+        $repository = $this->getRepository();
+        $entity = $this->createTestEntity();
 
-        // 验证Repository实例化成功
-        $this->assertInstanceOf(RequestLogRepository::class, $repository);
-        $this->assertInstanceOf(\Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository::class, $repository);
+        // 验证save方法带flush参数可以调用
+        $this->expectNotToPerformAssertions();
+        $repository->save($entity, true);
     }
 
-    public function testEntityClass(): void
+    public function testRemoveEntityBehavior(): void
     {
-        $registry = $this->createMock(ManagerRegistry::class);
-        $repository = new RequestLogRepository($registry);
+        // 测试remove方法的行为
+        $repository = $this->getRepository();
+        $entity = $this->createTestEntity();
 
-        // 通过反射检查Repository管理的实体类
-        $reflection = new \ReflectionClass($repository);
-        $parentClass = $reflection->getParentClass();
-        
-        // 验证是ServiceEntityRepository的子类
-        $this->assertEquals('Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository', $parentClass->getName());
+        // 先保存实体
+        $repository->save($entity, false);
+
+        // 验证remove方法可以调用而不抛出异常
+        $this->expectNotToPerformAssertions();
+        $repository->remove($entity, false); // 不flush以避免数据库操作
+    }
+
+    public function testRemoveEntityWithFlushBehavior(): void
+    {
+        // 测试remove方法带flush的行为
+        $repository = $this->getRepository();
+        $entity = $this->createTestEntity();
+
+        // 先保存实体
+        $repository->save($entity, false);
+
+        // 验证remove方法带flush参数可以调用
+        $this->expectNotToPerformAssertions();
+        $repository->remove($entity, true);
+    }
+
+    public function testInheritedMethodsAvailable(): void
+    {
+        // 测试从ServiceEntityRepository继承的基本方法是否可用
+        $repository = $this->getRepository();
+
+        // 测试这些方法可以调用（即使在没有数据的情况下）
+        $result = $repository->findAll();
+        $this->assertIsArray($result);
+
+        $count = $repository->count([]);
+        $this->assertIsInt($count);
+
+        $findByResult = $repository->findBy([]);
+        $this->assertIsArray($findByResult);
+    }
+
+    public function testEntityRelationship(): void
+    {
+        // 测试Repository与Entity的关系
+        $repository = $this->getRepository();
+        $entity = $this->createTestEntity();
+
+        // 验证Repository能处理正确的实体类型
+        $this->assertInstanceOf(RequestLog::class, $entity);
+
+        // 测试实体的基本方法
+        $entity->setApiName('test.api');
+        $this->assertSame('test.api', $entity->getApiName());
+
+        $entity->setRequest('{"method":"test"}');
+        $this->assertSame('{"method":"test"}', $entity->getRequest());
+    }
+
+    /**
+     * 创建测试用的RequestLog实体
+     */
+    private function createTestEntity(): RequestLog
+    {
+        $entity = new RequestLog();
+        $entity->setApiName('test.method');
+        $entity->setRequest('{"jsonrpc":"2.0","method":"test","id":1}');
+        $entity->setResponse('{"jsonrpc":"2.0","result":"success","id":1}');
+        $entity->setDescription('Test API call');
+        $entity->setServerIp('127.0.0.1');
+        $entity->setStopwatchDuration('0.05');
+
+        return $entity;
     }
 }

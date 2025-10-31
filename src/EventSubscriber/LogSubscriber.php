@@ -12,7 +12,6 @@ use Symfony\Contracts\Service\ResetInterface;
 use Tourze\BacktraceHelper\Backtrace;
 use Tourze\BacktraceHelper\ExceptionPrinter;
 use Tourze\DoctrineAsyncInsertBundle\Service\AsyncInsertService as DoctrineService;
-use Tourze\DoctrineHelper\ReflectionHelper;
 use Tourze\JsonRPC\Core\Event\MethodExecuteFailureEvent;
 use Tourze\JsonRPC\Core\Event\MethodExecuteSuccessEvent;
 use Tourze\JsonRPC\Core\Event\OnExceptionEvent;
@@ -73,18 +72,19 @@ class LogSubscriber implements ResetInterface
         }
 
         $method = $event->getMethod();
-        [$logResult, $logRequest, $logResponse] = $this->getLogConfig(ReflectionHelper::getClassReflection($event->getMethod()), $event);
+        [$logResult, $logRequest, $logResponse] = $this->getLogConfig(new \ReflectionClass($event->getMethod()), $event);
         if (!$logResult) {
             return;
         }
 
         $log = new RequestLog();
         if ($logRequest) {
+            $params = $event->getJsonRpcRequest()->getParams();
             $log->setRequest(Json::encode([
                 'id' => $event->getJsonRpcRequest()->getId(),
                 'jsonrpc' => $event->getJsonRpcRequest()->getJsonrpc(),
                 'method' => $event->getJsonRpcRequest()->getMethod(),
-                'params' => $event->getJsonRpcRequest()->getParams()->toArray(),
+                'params' => null !== $params ? $params->toArray() : [],
             ]));
         }
 
@@ -92,7 +92,7 @@ class LogSubscriber implements ResetInterface
             $log->setResponse(Json::encode($event->getResult()));
         }
 
-        if ($this->event !== null) {
+        if (null !== $this->event) {
             $log->setStopwatchDuration((string) $this->event->getDuration());
             $log->setStopwatchResult(strval($this->event));
         }
@@ -131,25 +131,26 @@ class LogSubscriber implements ResetInterface
         }
 
         $method = $event->getMethod();
-        [$logResult, $logRequest, $logResponse] = $this->getLogConfig(ReflectionHelper::getClassReflection($method), $event);
+        [$logResult, $logRequest, $logResponse] = $this->getLogConfig(new \ReflectionClass($method), $event);
         if (!$logResult) {
             return;
         }
 
         $log = new RequestLog();
         if ($logRequest) {
+            $params = $event->getJsonRpcRequest()->getParams();
             $log->setRequest(Json::encode([
                 'id' => $event->getJsonRpcRequest()->getId(),
                 'jsonrpc' => $event->getJsonRpcRequest()->getJsonrpc(),
                 'method' => $event->getJsonRpcRequest()->getMethod(),
-                'params' => $event->getJsonRpcRequest()->getParams()->toArray(),
+                'params' => null !== $params ? $params->toArray() : [],
             ]));
         }
 
         $log->setResponse($event->getException()->getMessage());
         $log->setException(ExceptionPrinter::exception($event->getException()));
 
-        if ($this->event !== null) {
+        if (null !== $this->event) {
             $log->setStopwatchDuration((string) $this->event->getDuration());
             $log->setStopwatchResult(strval($this->event));
         }
@@ -184,6 +185,10 @@ class LogSubscriber implements ResetInterface
         // TODO 思考下，这种接口是否应该记录到数据库
     }
 
+    /**
+     * @param \ReflectionClass<object> $reflectionClass
+     * @return array{bool, bool, bool}
+     */
     private function getLogConfig(\ReflectionClass $reflectionClass, MethodExecuteFailureEvent|MethodExecuteSuccessEvent $event): array
     {
         // 如果发生了不是预期的异常，那么我们任何情况都记录日志
@@ -196,7 +201,7 @@ class LogSubscriber implements ResetInterface
         }
 
         $instance = $reflectionClass->getAttributes(Log::class);
-        if (empty($instance)) {
+        if ([] === $instance) {
             return [
                 false, // 是否记录日志
                 false, // 是否记录request

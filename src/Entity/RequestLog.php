@@ -4,8 +4,8 @@ namespace Tourze\JsonRPCLogBundle\Entity;
 
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
-use Tourze\DoctrineIpBundle\Attribute\CreateIpColumn;
-use Tourze\DoctrineSnowflakeBundle\Service\SnowflakeIdGenerator;
+use Symfony\Component\Validator\Constraints as Assert;
+use Tourze\DoctrineIpBundle\Traits\CreatedFromIpAware;
 use Tourze\DoctrineSnowflakeBundle\Traits\SnowflakeKeyAware;
 use Tourze\DoctrineTimestampBundle\Traits\CreateTimeAware;
 use Tourze\DoctrineUserAgentBundle\Attribute\CreateUserAgentColumn;
@@ -25,53 +25,54 @@ class RequestLog implements \Stringable
 {
     use CreateTimeAware;
     use CreatedByAware;
+    use CreatedFromIpAware;
     use SnowflakeKeyAware;
 
-
+    #[Assert\Length(max: 65535)]
     #[ORM\Column(type: Types::TEXT, nullable: true, options: ['comment' => '操作记录'])]
     private ?string $description = null;
 
-    #[ORM\Column(type: Types::TEXT, options: ['comment' => '请求内容'])]
+    #[Assert\Length(max: 65535)]
+    #[ORM\Column(type: Types::TEXT, nullable: true, options: ['comment' => '请求内容'])]
     private ?string $request = null;
 
+    #[Assert\Length(max: 65535)]
     #[ORM\Column(type: Types::TEXT, nullable: true, options: ['comment' => '响应内容'])]
     private ?string $response = null;
 
+    #[Assert\Length(max: 65535)]
     #[ORM\Column(type: Types::TEXT, nullable: true, options: ['comment' => '异常'])]
     private ?string $exception = null;
 
+    #[Assert\Length(max: 40)]
     #[ORM\Column(length: 40, nullable: true, options: ['comment' => '服务端IP'])]
     private ?string $serverIp = null;
 
+    #[Assert\Length(max: 120)]
     #[ORM\Column(length: 120, nullable: true, options: ['comment' => 'StopWatch结果'])]
     private ?string $stopwatchResult = null;
 
+    #[Assert\Length(max: 15)]
     #[ORM\Column(type: Types::DECIMAL, precision: 12, scale: 2, nullable: true, options: ['comment' => '执行时长'])]
     private ?string $stopwatchDuration = null;
 
+    #[Assert\Length(max: 200)]
     #[ORM\Column(length: 200, nullable: true, options: ['comment' => 'API名称'])]
     private ?string $apiName = null;
 
-    #[CreateIpColumn]
-    #[ORM\Column(type: Types::STRING, length: 45, nullable: true, options: ['comment' => '操作IP'])]
-    private ?string $createdFromIp = null;
-
+    #[Assert\Length(max: 65535)]
     #[CreateUserAgentColumn]
     #[ORM\Column(type: Types::TEXT, nullable: true, options: ['comment' => '创建时UA'])]
     private ?string $createdFromUa = null;
-
-
 
     public function getRequest(): ?string
     {
         return $this->request;
     }
 
-    public function setRequest(string $request): self
+    public function setRequest(?string $request): void
     {
         $this->request = $request;
-
-        return $this;
     }
 
     public function getResponse(): ?string
@@ -79,11 +80,9 @@ class RequestLog implements \Stringable
         return $this->response;
     }
 
-    public function setResponse(?string $response): self
+    public function setResponse(?string $response): void
     {
         $this->response = $response;
-
-        return $this;
     }
 
     public function getException(): ?string
@@ -91,11 +90,9 @@ class RequestLog implements \Stringable
         return $this->exception;
     }
 
-    public function setException(?string $exception): self
+    public function setException(?string $exception): void
     {
         $this->exception = $exception;
-
-        return $this;
     }
 
     public function getDescription(): ?string
@@ -108,28 +105,14 @@ class RequestLog implements \Stringable
         $this->description = $description;
     }
 
-    public function setCreatedFromIp(string $createdFromIp): static
-    {
-        $this->createdFromIp = $createdFromIp;
-
-        return $this;
-    }
-
-    public function getCreatedFromIp(): ?string
-    {
-        return $this->createdFromIp;
-    }
-
     public function getServerIp(): ?string
     {
         return $this->serverIp;
     }
 
-    public function setServerIp(?string $serverIp): self
+    public function setServerIp(?string $serverIp): void
     {
         $this->serverIp = $serverIp;
-
-        return $this;
     }
 
     public function getStopwatchResult(): ?string
@@ -137,11 +120,9 @@ class RequestLog implements \Stringable
         return $this->stopwatchResult;
     }
 
-    public function setStopwatchResult(?string $stopwatchResult): self
+    public function setStopwatchResult(?string $stopwatchResult): void
     {
         $this->stopwatchResult = $stopwatchResult;
-
-        return $this;
     }
 
     public function getStopwatchDuration(): ?string
@@ -149,11 +130,9 @@ class RequestLog implements \Stringable
         return $this->stopwatchDuration;
     }
 
-    public function setStopwatchDuration(?string $stopwatchDuration): self
+    public function setStopwatchDuration(?string $stopwatchDuration): void
     {
         $this->stopwatchDuration = $stopwatchDuration;
-
-        return $this;
     }
 
     public function getApiName(): ?string
@@ -161,11 +140,9 @@ class RequestLog implements \Stringable
         return $this->apiName;
     }
 
-    public function setApiName(?string $apiName): self
+    public function setApiName(?string $apiName): void
     {
         $this->apiName = $apiName;
-
-        return $this;
     }
 
     public function getCreatedFromUa(): ?string
@@ -173,11 +150,19 @@ class RequestLog implements \Stringable
         return $this->createdFromUa;
     }
 
-    public function setCreatedFromUa(?string $createdFromUa): static
+    public function setCreatedFromUa(?string $createdFromUa): void
     {
         $this->createdFromUa = $createdFromUa;
+    }
 
-        return $this;
+    public function getRenderStatus(): string
+    {
+        return null !== $this->exception && '' !== $this->exception ? '异常' : '正常';
+    }
+
+    public function getRenderTrackUser(): ?string
+    {
+        return $this->createdBy;
     }
 
     public function __toString(): string

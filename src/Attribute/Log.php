@@ -7,7 +7,7 @@ namespace Tourze\JsonRPCLogBundle\Attribute;
  *
  * 建议只在写操作、耗时统计这类接口上加这个注解
  */
-#[\Attribute(\Attribute::TARGET_CLASS)]
+#[\Attribute(flags: \Attribute::TARGET_CLASS)]
 class Log
 {
     public function __construct(

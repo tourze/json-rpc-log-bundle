@@ -18,9 +18,10 @@ use Tourze\JsonRPCLogBundle\Entity\RequestLog;
 
 /**
  * JsonRPC 请求日志管理控制器
+ * @extends AbstractCrudController<RequestLog>
  */
 #[AdminCrud(routePath: '/json-rpc/log', routeName: 'json_rpc_log')]
-class RequestLogCrudController extends AbstractCrudController
+final class RequestLogCrudController extends AbstractCrudController
 {
     public static function getEntityFqcn(): string
     {
@@ -37,78 +38,94 @@ class RequestLogCrudController extends AbstractCrudController
             ->setHelp('index', '记录JsonRPC服务端的重要请求与响应信息，用于监控和故障排查')
             ->setDefaultSort(['id' => 'DESC'])
             ->setSearchFields(['id', 'apiName', 'description', 'createdFromIp'])
-            ->showEntityActionsInlined();
+            ->showEntityActionsInlined()
+        ;
     }
 
     public function configureFields(string $pageName): iterable
     {
         yield IdField::new('id', 'ID')
             ->setMaxLength(9999)
-            ->hideOnForm();
+            ->hideOnForm()
+        ;
 
         yield TextField::new('description', '操作记录')
             ->hideOnIndex()
-            ->setFormTypeOptions(['required' => false]);
+            ->setFormTypeOptions(['required' => false])
+        ;
 
         yield TextField::new('apiName', 'API名称')
-            ->setMaxLength(50);
+            ->setMaxLength(50)
+        ;
 
         yield TextField::new('renderStatus', '状态')
             ->hideOnForm()
             ->addCssClass('text-center')
             ->formatValue(function ($value) {
-                if ($value === '异常') {
+                if ('异常' === $value) {
                     return '<span class="text-danger">' . $value . '</span>';
                 }
+
                 return '<span class="text-success">' . $value . '</span>';
-            });
+            })
+        ;
 
         yield TextField::new('renderTrackUser', '操作用户')
-            ->hideOnForm();
+            ->hideOnForm()
+        ;
 
         yield TextField::new('createdFromIp', '来源IP')
-            ->hideOnForm();
+            ->hideOnForm()
+        ;
 
         yield TextField::new('serverIp', '服务端IP')
             ->hideOnDetail()
-            ->hideOnForm();
+            ->hideOnForm()
+        ;
 
         yield TextField::new('stopwatchDuration', '执行时长(ms)')
             ->hideOnForm()
             ->formatValue(function ($value) {
                 return $value ? number_format(floatval($value), 2) . ' ms' : '';
-            });
+            })
+        ;
 
         yield TextareaField::new('request', '请求内容')
             ->hideOnIndex()
             ->setFormTypeOptions(['required' => false])
             ->formatValue(function ($value) {
                 return $this->formatJson($value);
-            });
+            })
+        ;
 
         yield TextareaField::new('response', '响应内容')
             ->hideOnIndex()
             ->setFormTypeOptions(['required' => false])
             ->formatValue(function ($value) {
                 return $this->formatJson($value);
-            });
+            })
+        ;
 
         yield TextareaField::new('exception', '异常信息')
             ->hideOnIndex()
-            ->setFormTypeOptions(['required' => false]);
+            ->setFormTypeOptions(['required' => false])
+        ;
 
         yield TextField::new('stopwatchResult', 'Stopwatch结果')
             ->hideOnIndex()
-            ->hideOnForm();
+            ->hideOnForm()
+        ;
 
         yield TextField::new('createdFromUa', '用户代理')
             ->hideOnIndex()
             ->hideOnForm()
-            ->setMaxLength(100);
+            ->setMaxLength(100)
+        ;
 
         yield DateTimeField::new('createTime', '创建时间')
             ->hideOnForm()
-            ->setFormat('yyyy-MM-dd HH:mm:ss');
+            ->setFormat('yyyy-MM-dd HH:mm:ss')
+        ;
     }
 
     public function configureFilters(Filters $filters): Filters
@@ -117,18 +134,16 @@ class RequestLogCrudController extends AbstractCrudController
             ->add(TextFilter::new('apiName', 'API名称'))
             ->add(TextFilter::new('createdFromIp', '来源IP'))
             ->add(TextFilter::new('description', '操作记录'))
-            ->add(DateTimeFilter::new('createTime', '创建时间'));
+            ->add(DateTimeFilter::new('createTime', '创建时间'))
+        ;
     }
 
     public function configureActions(Actions $actions): Actions
     {
         return $actions
             ->add(Crud::PAGE_INDEX, Action::DETAIL)
-            ->reorder(Crud::PAGE_INDEX, [Action::DETAIL, Action::DELETE])
-            ->remove(Crud::PAGE_INDEX, Action::NEW)
-            ->remove(Crud::PAGE_INDEX, Action::EDIT)
-            ->remove(Crud::PAGE_DETAIL, Action::EDIT)
-            ->remove(Crud::PAGE_DETAIL, Action::DELETE);
+            ->disable(Action::NEW, Action::EDIT, Action::DELETE)
+        ;
     }
 
     /**
@@ -136,13 +151,15 @@ class RequestLogCrudController extends AbstractCrudController
      */
     private function formatJson(?string $json): string
     {
-        if (empty($json)) {
+        if (null === $json || '' === $json) {
             return '';
         }
 
         $decoded = json_decode($json, true);
-        if (json_last_error() === JSON_ERROR_NONE) {
-            return json_encode($decoded, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
+        if (JSON_ERROR_NONE === json_last_error()) {
+            $formatted = json_encode($decoded, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
+
+            return false !== $formatted ? $formatted : $json;
         }
 
         return $json;

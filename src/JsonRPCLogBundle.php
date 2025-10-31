@@ -2,33 +2,34 @@
 
 namespace Tourze\JsonRPCLogBundle;
 
+use Doctrine\Bundle\DoctrineBundle\DoctrineBundle;
 use Symfony\Component\HttpKernel\Bundle\Bundle;
 use Tourze\BundleDependency\BundleDependencyInterface;
+use Tourze\DoctrineAsyncInsertBundle\DoctrineAsyncInsertBundle;
+use Tourze\DoctrineIndexedBundle\DoctrineIndexedBundle;
+use Tourze\DoctrineIpBundle\DoctrineIpBundle;
+use Tourze\DoctrineSnowflakeBundle\DoctrineSnowflakeBundle;
+use Tourze\DoctrineTimestampBundle\DoctrineTimestampBundle;
+use Tourze\DoctrineUserAgentBundle\DoctrineUserAgentBundle;
+use Tourze\DoctrineUserBundle\DoctrineUserBundle;
+use Tourze\EasyAdminMenuBundle\EasyAdminMenuBundle;
+use Tourze\ScheduleEntityCleanBundle\ScheduleEntityCleanBundle;
 
 class JsonRPCLogBundle extends Bundle implements BundleDependencyInterface
 {
-//    public function build(ContainerBuilder $container): void
-//    {
-//        parent::build($container);
-//
-//        $container->addCompilerPass(new DatabaseServicesCompilerPass(
-//            servicePrefix: 'json_rpc_log',
-//            entityPath: __DIR__ . '/Entity',
-//            entityNamespace: 'Tourze\\JsonRPCLogBundle\\Entity',
-//            serviceNamespace: 'Tourze\\JsonRPCLogBundle'
-//        ));
-//    }
-
     public static function getBundleDependencies(): array
     {
         return [
-            \Tourze\DoctrineIndexedBundle\DoctrineIndexedBundle::class => ['all' => true],
-            \Tourze\DoctrineIpBundle\DoctrineIpBundle::class => ['all' => true],
-            \Tourze\DoctrineSnowflakeBundle\DoctrineSnowflakeBundle::class => ['all' => true],
-            \Tourze\DoctrineTimestampBundle\DoctrineTimestampBundle::class => ['all' => true],
-            \Tourze\DoctrineUserAgentBundle\DoctrineUserAgentBundle::class => ['all' => true],
-            \Tourze\DoctrineUserBundle\DoctrineUserBundle::class => ['all' => true],
-            \Tourze\ScheduleEntityCleanBundle\ScheduleEntityCleanBundle::class => ['all' => true],
+            DoctrineBundle::class => ['all' => true],
+            DoctrineAsyncInsertBundle::class => ['all' => true],
+            DoctrineIndexedBundle::class => ['all' => true],
+            DoctrineIpBundle::class => ['all' => true],
+            DoctrineSnowflakeBundle::class => ['all' => true],
+            DoctrineTimestampBundle::class => ['all' => true],
+            DoctrineUserAgentBundle::class => ['all' => true],
+            DoctrineUserBundle::class => ['all' => true],
+            EasyAdminMenuBundle::class => ['all' => true],
+            ScheduleEntityCleanBundle::class => ['all' => true],
         ];
     }
 }

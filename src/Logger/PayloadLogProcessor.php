@@ -22,7 +22,7 @@ class PayloadLogProcessor implements ProcessorInterface, ResetInterface
 
     public function __invoke(LogRecord $record): LogRecord
     {
-        if ($this->payload !== null) {
+        if (null !== $this->payload) {
             $record->extra['json_rpc_payload'] = $this->payload;
         }
 

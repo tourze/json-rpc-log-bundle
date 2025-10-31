@@ -2,14 +2,24 @@
 
 namespace Tourze\JsonRPCLogBundle\Tests\Entity;
 
-use PHPUnit\Framework\TestCase;
+use PHPUnit\Framework\Attributes\CoversClass;
+use PHPUnit\Framework\Attributes\DataProvider;
 use Tourze\JsonRPCLogBundle\Entity\RequestLog;
+use Tourze\PHPUnitDoctrineEntity\AbstractEntityTestCase;
 use Yiisoft\Json\Json;
 
-class RequestLogTest extends TestCase
+/**
+ * @internal
+ */
+#[CoversClass(RequestLog::class)]
+final class RequestLogTest extends AbstractEntityTestCase
 {
-    public function testGetterAndSetter(): void
+    public function testCustomGetterAndSetter(): void
     {
+        // 使用具体类 Tourze\JsonRPCLogBundle\Entity\RequestLog 的实例化，原因：
+        // 理由 1：RequestLog 是一个简单的实体类，不需要依赖注入，直接实例化是合理的测试方式
+        // 理由 2：该类用于数据库实体映射，需要测试其 getter/setter 方法
+        // 理由 3：直接实例化可以验证实体属性访问的正确性
         $requestLog = new RequestLog();
 
         // 测试 Request 相关方法
@@ -70,6 +80,10 @@ class RequestLogTest extends TestCase
 
     public function testNullableFields(): void
     {
+        // 使用具体类 Tourze\JsonRPCLogBundle\Entity\RequestLog 的实例化，原因：
+        // 理由 1：RequestLog 是一个简单的实体类，不需要依赖注入，直接实例化是合理的测试方式
+        // 理由 2：该类用于数据库实体映射，需要测试其可空字段的默认值
+        // 理由 3：直接实例化可以验证实体初始化状态
         $requestLog = new RequestLog();
 
         // 测试所有可空字段的默认值
@@ -88,6 +102,10 @@ class RequestLogTest extends TestCase
 
     public function testSetNullValues(): void
     {
+        // 使用具体类 Tourze\JsonRPCLogBundle\Entity\RequestLog 的实例化，原因：
+        // 理由 1：RequestLog 是一个简单的实体类，不需要依赖注入，直接实例化是合理的测试方式
+        // 理由 2：该类用于数据库实体映射，需要测试其 null 值处理能力
+        // 理由 3：直接实例化可以验证实体属性边界值处理
         $requestLog = new RequestLog();
 
         // 测试设置null值
@@ -121,6 +139,10 @@ class RequestLogTest extends TestCase
 
     public function testEmptyStringValues(): void
     {
+        // 使用具体类 Tourze\JsonRPCLogBundle\Entity\RequestLog 的实例化，原因：
+        // 理由 1：RequestLog 是一个简单的实体类，不需要依赖注入，直接实例化是合理的测试方式
+        // 理由 2：该类用于数据库实体映射，需要测试其空字符串值处理能力
+        // 理由 3：直接实例化可以验证实体属性边界值处理
         $requestLog = new RequestLog();
 
         // 测试空字符串值
@@ -157,6 +179,10 @@ class RequestLogTest extends TestCase
 
     public function testComplexJsonData(): void
     {
+        // 使用具体类 Tourze\JsonRPCLogBundle\Entity\RequestLog 的实例化，原因：
+        // 理由 1：RequestLog 是一个简单的实体类，不需要依赖注入，直接实例化是合理的测试方式
+        // 理由 2：该类用于数据库实体映射，需要测试其复杂 JSON 数据处理能力
+        // 理由 3：直接实例化可以验证实体属性数据处理能力
         $requestLog = new RequestLog();
 
         // 测试复杂JSON数据
@@ -169,11 +195,11 @@ class RequestLogTest extends TestCase
                     'email' => 'john@example.com',
                     'metadata' => [
                         'tags' => ['admin', 'power-user'],
-                        'preferences' => ['theme' => 'dark']
-                    ]
-                ]
+                        'preferences' => ['theme' => 'dark'],
+                    ],
+                ],
             ],
-            'id' => 'req-123'
+            'id' => 'req-123',
         ];
 
         $requestJson = Json::encode($complexRequest);
@@ -187,6 +213,10 @@ class RequestLogTest extends TestCase
 
     public function testDateTimeHandling(): void
     {
+        // 使用具体类 Tourze\JsonRPCLogBundle\Entity\RequestLog 的实例化，原因：
+        // 理由 1：RequestLog 是一个简单的实体类，不需要依赖注入，直接实例化是合理的测试方式
+        // 理由 2：该类用于数据库实体映射，需要测试其 DateTime 处理能力
+        // 理由 3：直接实例化可以验证实体属性时间处理能力
         $requestLog = new RequestLog();
 
         // 测试不同的DateTime对象
@@ -202,6 +232,10 @@ class RequestLogTest extends TestCase
 
     public function testIpAddressFormats(): void
     {
+        // 使用具体类 Tourze\JsonRPCLogBundle\Entity\RequestLog 的实例化，原因：
+        // 理由 1：RequestLog 是一个简单的实体类，不需要依赖注入，直接实例化是合理的测试方式
+        // 理由 2：该类用于数据库实体映射，需要测试其 IP 地址格式处理能力
+        // 理由 3：直接实例化可以验证实体属性 IP 地址处理能力
         $requestLog = new RequestLog();
 
         // 测试IPv4地址
@@ -225,6 +259,10 @@ class RequestLogTest extends TestCase
 
     public function testStopwatchDurationFormats(): void
     {
+        // 使用具体类 Tourze\JsonRPCLogBundle\Entity\RequestLog 的实例化，原因：
+        // 理由 1：RequestLog 是一个简单的实体类，不需要依赖注入，直接实例化是合理的测试方式
+        // 理由 2：该类用于数据库实体映射，需要测试其持续时间格式处理能力
+        // 理由 3：直接实例化可以验证实体属性数值处理能力
         $requestLog = new RequestLog();
 
         // 测试不同的持续时间格式
@@ -238,6 +276,10 @@ class RequestLogTest extends TestCase
 
     public function testUserAgentStrings(): void
     {
+        // 使用具体类 Tourze\JsonRPCLogBundle\Entity\RequestLog 的实例化，原因：
+        // 理由 1：RequestLog 是一个简单的实体类，不需要依赖注入，直接实例化是合理的测试方式
+        // 理由 2：该类用于数据库实体映射，需要测试其 User Agent 字符串处理能力
+        // 理由 3：直接实例化可以验证实体属性字符串处理能力
         $requestLog = new RequestLog();
 
         // 测试常见的User Agent字符串
@@ -246,7 +288,7 @@ class RequestLogTest extends TestCase
             'curl/7.68.0',
             'PostmanRuntime/7.28.4',
             'custom-api-client/1.0',
-            ''
+            '',
         ];
 
         foreach ($userAgents as $ua) {
@@ -257,16 +299,19 @@ class RequestLogTest extends TestCase
 
     public function testFluentInterface(): void
     {
+        // 使用具体类 Tourze\JsonRPCLogBundle\Entity\RequestLog 的实例化，原因：
+        // 理由 1：RequestLog 是一个简单的实体类，不需要依赖注入，直接实例化是合理的测试方式
+        // 理由 2：该类用于数据库实体映射，需要测试其setter方法的正确性
+        // 理由 3：直接实例化可以验证实体方法设计的正确性
         $requestLog = new RequestLog();
 
-        // 测试链式调用
-        $result = $requestLog
-            ->setRequest('test request')
-            ->setResponse('test response')
-            ->setApiName('test.api')
-            ->setServerIp('127.0.0.1');
+        // 测试setter方法（现在返回void，不支持链式调用）
+        $requestLog->setRequest('test request');
+        $requestLog->setResponse('test response');
+        $requestLog->setApiName('test.api');
+        $requestLog->setServerIp('127.0.0.1');
 
-        $this->assertSame($requestLog, $result);
+        // 验证设置的值是否正确
         $this->assertSame('test request', $requestLog->getRequest());
         $this->assertSame('test response', $requestLog->getResponse());
         $this->assertSame('test.api', $requestLog->getApiName());
@@ -275,26 +320,34 @@ class RequestLogTest extends TestCase
 
     public function testLongTextContent(): void
     {
+        // 使用具体类 Tourze\JsonRPCLogBundle\Entity\RequestLog 的实例化，原因：
+        // 理由 1：RequestLog 是一个简单的实体类，不需要依赖注入，直接实例化是合理的测试方式
+        // 理由 2：该类用于数据库实体映射，需要测试其长文本内容处理能力
+        // 理由 3：直接实例化可以验证实体属性长文本处理能力
         $requestLog = new RequestLog();
 
         // 测试长文本内容
         $longText = str_repeat('Lorem ipsum dolor sit amet, consectetur adipiscing elit. ', 100);
-        
+
         $requestLog->setRequest($longText);
         $this->assertSame($longText, $requestLog->getRequest());
-        
+
         $requestLog->setResponse($longText);
         $this->assertSame($longText, $requestLog->getResponse());
-        
+
         $requestLog->setException($longText);
         $this->assertSame($longText, $requestLog->getException());
-        
+
         $requestLog->setCreatedFromUa($longText);
         $this->assertSame($longText, $requestLog->getCreatedFromUa());
     }
 
     public function testSpecialCharacters(): void
     {
+        // 使用具体类 Tourze\JsonRPCLogBundle\Entity\RequestLog 的实例化，原因：
+        // 理由 1：RequestLog 是一个简单的实体类，不需要依赖注入，直接实例化是合理的测试方式
+        // 理由 2：该类用于数据库实体映射，需要测试其特殊字符处理能力
+        // 理由 3：直接实例化可以验证实体属性特殊字符处理能力
         $requestLog = new RequestLog();
 
         // 测试特殊字符
@@ -306,5 +359,30 @@ class RequestLogTest extends TestCase
         $unicode = '测试中文内容 🚀 emoji 日本語 한국어';
         $requestLog->setRequest($unicode);
         $this->assertSame($unicode, $requestLog->getRequest());
+    }
+
+    protected function createEntity(): RequestLog
+    {
+        return new RequestLog();
+    }
+
+    /**
+     * @return array<string, array{0: string, 1: mixed}>
+     */
+    public static function propertiesProvider(): array
+    {
+        return [
+            'request' => ['request', 'test request data'],
+            'response' => ['response', 'test response data'],
+            'exception' => ['exception', 'test exception'],
+            'serverIp' => ['serverIp', '127.0.0.1'],
+            'stopwatchResult' => ['stopwatchResult', 'test result'],
+            'stopwatchDuration' => ['stopwatchDuration', '1.23'],
+            'apiName' => ['apiName', 'test.api'],
+            'createdFromIp' => ['createdFromIp', '192.168.1.1'],
+            'createdFromUa' => ['createdFromUa', 'test ua'],
+            'createTime' => ['createTime', new \DateTimeImmutable()],
+            'createdBy' => ['createdBy', 'test user'],
+        ];
     }
 }

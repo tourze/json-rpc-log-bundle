@@ -14,3 +14,7 @@ services:
     resource: '../../Repository/'
   Tourze\JsonRPCLogBundle\Service\:
     resource: '../../Service/'
+  
+  # 确保测试时可以访问 AdminMenu 服务
+  Tourze\JsonRPCLogBundle\Service\AdminMenu:
+    public: true
